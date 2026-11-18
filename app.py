@@ -32,6 +32,8 @@ BORDER = "#E3E9F2"
 PALETTE = [ROSE, "#FFB000", "#00C2A8", "#5B5FEF", "#27AE60", "#FF7A00", DEEP_ROSE]
 
 # -------------------------- Styling --------------------------
+hero_image = Path(__file__).parent / "assets" / "reading-book-banner.jpg"
+hero_image_uri = base64.b64encode(hero_image.read_bytes()).decode("ascii")
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
@@ -42,46 +44,62 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 
 /* Sidebar */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #EEF2FF 0%, #E7FFFA 100%);
-    border-right: 1px solid #E3E9F2;
+    background: linear-gradient(180deg, #F1F4FF 0%, #E9FBF7 100%);
+    border-right: 4px solid #D5ECEB;
+    box-shadow: 3px 0 14px rgba(23,43,77,.06);
 }
 [data-testid="stSidebar"] * { color: #172B4D; }
 [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 { font-family: 'Playfair Display', serif; color: #172B4D; }
-[data-testid="stSidebar"] [role="radiogroup"] { gap: 7px; }
+[data-testid="stSidebar"] h3 {
+    font-family: 'Playfair Display', serif; color: #172B4D;
+}
+[data-testid="stSidebar"] h3 { font-size: 20px; margin-bottom: 12px; }
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p {
+    color: #52627C; font-size: 13px; line-height: 1.45;
+}
+[data-testid="stSidebar"] [role="radiogroup"] { gap: 8px; padding: 3px 0; }
 [data-testid="stSidebar"] [role="radiogroup"] label {
-    border-radius: 12px; padding: 10px 12px; transition: all .2s ease;
+    display: flex; align-items: center; min-height: 46px; box-sizing: border-box;
+    border: 1px solid transparent; border-radius: 14px;
+    padding: 10px 12px; transition: all .2s ease;
+}
+[data-testid="stSidebar"] [role="radiogroup"] label p {
+    font-size: 15px; line-height: 1.35; margin: 0;
 }
 [data-testid="stSidebar"] [role="radiogroup"] label:hover {
-    background: #FFFFFF; transform: translateX(3px);
+    background: #FFFFFF; border-color: #DCE5F5; transform: translateX(2px);
 }
 [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
     background: #5B5FEF; color: white; font-weight: 700;
-    border-left: 4px solid #FFB000;
+    border-left: 4px solid #FFB000; box-shadow: 0 4px 12px rgba(91,95,239,.18);
 }
 [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) * { color: white !important; }
 [data-testid="stSidebar"] hr { border-color: #D7DFF0; }
 
 /* Header and section headings */
 .hero {
-    background: linear-gradient(115deg, #5B5FEF 0%, #00A993 55%, #FF7A00 100%);
-    border-radius: 22px; padding: 34px 38px; color: white;
+    background:
+        linear-gradient(90deg, rgba(23,43,77,.88) 0%, rgba(23,43,77,.72) 58%, rgba(23,43,77,.3) 100%),
+        url("data:image/jpeg;base64,__HERO_IMAGE_URI__");
+    background-size: cover; background-position: center 54%;
+    border-radius: 22px; padding: 34px 38px; min-height: 220px;
+    display: flex; flex-direction: column; justify-content: center;
+    box-sizing: border-box; color: white;
     margin-bottom: 25px; box-shadow: 0 12px 30px rgba(49,62,129,.18);
     position: relative; overflow: hidden;
 }
-.hero:after {
-    content: "📖"; position: absolute; right: 42px; top: -18px;
-    opacity: .2; font-size: 142px; transform: rotate(-8deg);
-}
 .hero h1 {
     display: inline-block; font-family: 'Playfair Display', serif; color: white;
-    font-size: 42px; margin: 0 0 10px;
+    font-size: 42px; margin: 0 0 10px; position: relative; z-index: 1;
 }
 .hero h1:after {
     content: ""; display: block; width: 82px; height: 4px; margin-top: 12px;
     border-radius: 4px; background: #FFF1A8;
 }
-.hero p { color: #F4F7FF; font-size: 16px; max-width: 850px; line-height: 1.65; margin-bottom: 0; }
+.hero p {
+    color: #F4F7FF; font-size: 16px; max-width: 850px; line-height: 1.65;
+    margin-bottom: 0; position: relative; z-index: 1;
+}
 .section-title {
     font-family: 'Playfair Display', serif; font-size: 27px; font-weight: 700;
     color: #172B4D; margin: 24px 0 4px;
@@ -141,11 +159,13 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 .stTabs [aria-selected="true"] { border-bottom-color: #FF5A5F !important; }
 [data-testid="stSelectbox"] label, [data-testid="stMultiSelect"] label { color: #172B4D; font-weight: 700; }
 .footer {
-    margin-top: 30px; background: #172B4D; color: #F4F7FF; border-radius: 12px;
+    margin-top: 30px;
+    background: linear-gradient(115deg, #172B4D 0%, #1E5361 100%);
+    color: #F4F7FF; border-radius: 12px;
     padding: 20px; text-align: center;
 }
 .footer strong { color: #FFFFFF; font-family: 'Playfair Display', serif; font-size: 19px; }
-.footer-rights { color: #AEBBD4; font-size: 12px; }
+.footer-rights { color: #D3DDEB; font-size: 12px; }
 .team-grid {
     display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 16px; max-width: 1100px; margin: 0 auto;
@@ -206,8 +226,7 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
     *, *::before, *::after { transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
 @media (max-width: 768px) {
-    .hero { padding: 24px; } .hero h1 { font-size: 29px; }
-    .hero:after { right: 8px; font-size: 85px; }
+    .hero { padding: 24px; min-height: 200px; } .hero h1 { font-size: 29px; }
 }
 @media (max-width: 760px) {
     .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
@@ -221,7 +240,7 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
     .team-grid { grid-template-columns: 1fr; }
 }
 </style>
-""", unsafe_allow_html=True)
+""".replace("__HERO_IMAGE_URI__", hero_image_uri), unsafe_allow_html=True)
 
 # -------------------------- Respondent Data --------------------------
 SHORT_COLUMNS = [
@@ -248,6 +267,7 @@ SCREEN_HOURS_MAP = {
 @st.cache_data
 def load_data():
     candidates = [
+        Path(__file__).with_name("SCE_Reading_Habits_Cleaned_Data_Final.csv"),
         Path(__file__).with_name("cleaned_data.xlsx"),
         Path(__file__).with_name("RAW data.xlsx"),
         Path(__file__).with_name("RAW_data.xlsx"),
@@ -258,14 +278,26 @@ def load_data():
     if source is None:
         return None
 
-    data = pd.read_excel(source)
-    if len(data.columns) != len(SHORT_COLUMNS):
-        raise ValueError(
-            f"Expected {len(SHORT_COLUMNS)} survey columns in {source.name}, "
-            f"found {len(data.columns)}."
-        )
+    if source.suffix.lower() == ".csv":
+        data = pd.read_csv(source)
+        if all(column in data.columns for column in SHORT_COLUMNS):
+            data = data.loc[:, SHORT_COLUMNS].copy()
+        elif len(data.columns) == len(SHORT_COLUMNS):
+            data.columns = SHORT_COLUMNS
+        else:
+            raise ValueError(
+                f"Expected the {len(SHORT_COLUMNS)} survey columns in {source.name}, "
+                f"found {len(data.columns)} columns."
+            )
+    else:
+        data = pd.read_excel(source)
+        if len(data.columns) != len(SHORT_COLUMNS):
+            raise ValueError(
+                f"Expected {len(SHORT_COLUMNS)} survey columns in {source.name}, "
+                f"found {len(data.columns)}."
+            )
+        data.columns = SHORT_COLUMNS
     data = data.dropna(how="all").copy()
-    data.columns = SHORT_COLUMNS
     data = data.drop_duplicates().copy()
 
     for column in SHORT_COLUMNS:
@@ -294,7 +326,7 @@ def load_data():
 
 full_data = load_data()
 if full_data is None:
-    st.error("Survey data not found. Place RAW data.xlsx beside app.py.")
+    st.error("Survey data not found. Place the cleaned CSV or survey Excel file beside app.py.")
     st.stop()
 
 with st.sidebar:
@@ -304,7 +336,7 @@ with st.sidebar:
     page = st.radio(
         "Choose a page",
         ["Overview", "Reading Frequency & Time", "Reading Preferences",
-         "Student Profile", "Screen Time & Barriers"],
+         "Student Profile", "Screen Time & Barriers", "Cleaned Data"],
         label_visibility="collapsed"
     )
     st.markdown("---")
@@ -629,6 +661,24 @@ elif page == "Screen Time & Barriers":
     st.markdown("<div class='section-title'>Reported Barriers to Reading</div>", unsafe_allow_html=True)
     show(count_bar(BARRIER_COUNTS, "Barriers Selected by Students", horizontal=True), 450)
     note("Students could report more than one barrier. Therefore, the total number of barrier selections can be higher than the number of respondents. Correlation indicates association and does not prove cause and effect.")
+
+# ========================== DATA REFERENCE ==========================
+elif page == "Cleaned Data":
+    section(
+        "Cleaned Survey Data",
+        "Reference the cleaned responses used throughout this dashboard."
+    )
+    st.caption(
+        f"{len(full_data):,} cleaned responses. This table includes all responses "
+        "and is not affected by the respondent filters."
+    )
+    st.download_button(
+        "Download cleaned data (CSV)",
+        data=full_data.to_csv(index=False).encode("utf-8-sig"),
+        file_name="SCE_Reading_Habits_Cleaned_Data.csv",
+        mime="text/csv"
+    )
+    st.dataframe(full_data, width="stretch", hide_index=True)
 
 # -------------------------- Team and Footer --------------------------
 st.markdown("<div class='section-title'>Meet the team</div>", unsafe_allow_html=True)
